@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Application\Dto%27s\" />
     <Folder Include="Application\Interfaces\" />
     <Folder Include="Application\Implementation\" />
     <Folder Include="Controllers\" />
