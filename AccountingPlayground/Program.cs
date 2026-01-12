@@ -27,7 +27,7 @@ namespace AccountingPlayground
 			var app = builder.Build();
 
 			using (var scope = app.Services.CreateScope())
-				await SeedAccounts.SeedAssetAccountsAsync(scope.ServiceProvider);
+				await SeedAccounts.SeedAllAccountsAsync(scope.ServiceProvider);
 
 			// Configure the HTTP request pipeline.
 			if (app.Environment.IsDevelopment())

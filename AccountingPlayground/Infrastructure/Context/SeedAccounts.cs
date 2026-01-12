@@ -2,292 +2,168 @@
 
 namespace AccountingPlayground.Infrastructure.Context
 {
-	public static class SeedAccounts
-	{
-		public static async Task SeedAssetAccountsAsync(IServiceProvider serviceProvider)
-		{
-			using var scope = serviceProvider.CreateScope();
-			var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    public static class SeedAccounts
+    {
+        public static async Task SeedAllAccountsAsync(IServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-			if (context.FinancialAccounts.Any(a => a.Type == AccountType.Asset))
-				return;
+            await SeedAssetAccountsAsync(context);
+            await SeedLiabilityAccountsAsync(context);
+            await SeedRevenueAndExpenseAccountsAsync(context);
+            await SeedEquityAccountsAsync(context);
+        }
 
-			var assets = new FinancialAccount
-			{
-				Name = "Assets",
-				Type = AccountType.Asset
-			};
+        public static async Task SeedAssetAccountsAsync(ApplicationDbContext context)
+        {
+            if (context.FinancialAccounts.Any(a => a.Type == AccountType.Asset))
+                return;
 
-			context.FinancialAccounts.Add(assets);
-			await context.SaveChangesAsync();
+            // Root
+            var assets = CreateAccount("Assets","1",1,false,AccountType.Asset);
 
-			var cash = new FinancialAccount
-			{
-				Name = "Cash",
-				Type = AccountType.Asset,
-				ParentAccountId = assets.Id
-			};
+            context.FinancialAccounts.Add(assets);
+            await context.SaveChangesAsync();
 
-			context.FinancialAccounts.Add(cash);
-			await context.SaveChangesAsync();
+            // Cash
+            var cash = CreateAccount("Cash","11",2,false,AccountType.Asset,assets.Id);
 
-			context.FinancialAccounts.AddRange(
-				new FinancialAccount
-				{
-					Name = "Main Cash",
-					Type = AccountType.Asset,
-					ParentAccountId = cash.Id
-				},
-				new FinancialAccount
-				{
-					Name = "Petty Cash",
-					Type = AccountType.Asset,
-					ParentAccountId = cash.Id
-				}
-			);
+            context.FinancialAccounts.Add(cash);
+            await context.SaveChangesAsync();
 
-			var bank = new FinancialAccount
-			{
-				Name = "Bank",
-				Type = AccountType.Asset,
-				ParentAccountId = assets.Id
-			};
+            // Cash children
+            context.FinancialAccounts.AddRange(
+                CreateAccount("Main Cash", "1101", 3, true, AccountType.Asset, cash.Id),
+                CreateAccount("Petty Cash", "1102", 3, true, AccountType.Asset, cash.Id)
+            );
 
-			context.FinancialAccounts.Add(bank);
-			await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
-			context.FinancialAccounts.AddRange(
-				new FinancialAccount
-				{
-					Name = "National Bank of Egypt",
-					Type = AccountType.Asset,
-					ParentAccountId = bank.Id
-				},
-				new FinancialAccount
-				{
-					Name = "Banque Misr",
-					Type = AccountType.Asset,
-					ParentAccountId = bank.Id
-				}
-			);
+            // Bank
+            var bank = CreateAccount("Bank", "12", 2, false, AccountType.Asset, assets.Id);
 
-			var inventory = new FinancialAccount
-			{
-				Name = "Inventory",
-				Type = AccountType.Asset,
-				ParentAccountId = assets.Id
-			};
+            context.FinancialAccounts.Add(bank);
+            await context.SaveChangesAsync();
 
-			context.FinancialAccounts.Add(inventory);
-			await context.SaveChangesAsync();
+            // Bank children
+            context.FinancialAccounts.AddRange(
+                CreateAccount("National Bank of Egypt", "1201", 3, true, AccountType.Asset, bank.Id),
+                CreateAccount("Banque Misr", "1202", 3, true, AccountType.Asset, bank.Id)
+            );
 
-			context.FinancialAccounts.Add(
-				new FinancialAccount
-				{
-					Name = "Raw Materials Inventory",
-					Type = AccountType.Asset,
-					ParentAccountId = inventory.Id
-				}
-			);
+            await context.SaveChangesAsync();
 
-			context.FinancialAccounts.Add(
-				new FinancialAccount
-				{
-					Name = "Accounts Receivable",
-					Type = AccountType.Asset,
-					ParentAccountId = assets.Id
-				}
-			);
+            // Inventory
+            var inventory = CreateAccount("Inventory", "13", 2, false, AccountType.Asset, assets.Id);
 
-			context.FinancialAccounts.Add(
-				new FinancialAccount
-				{
-					Name = "Employee Receivable",
-					Type = AccountType.Asset,
-					ParentAccountId = assets.Id
-				}
-			);
+            context.FinancialAccounts.Add(inventory);
+            await context.SaveChangesAsync();
 
-			await context.SaveChangesAsync();
-		}
-		public static async Task SeedLiabilityAccountsAsync(IServiceProvider serviceProvider)
-		{
-			using var scope = serviceProvider.CreateScope();
-			var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            context.FinancialAccounts.Add(
+                CreateAccount("Raw Materials Inventory", "1301", 3, true, AccountType.Asset, inventory.Id)
+            );
 
-			if (context.FinancialAccounts.Any(a => a.Type == AccountType.Liability))
-				return;
+            // Receivables
+            context.FinancialAccounts.AddRange(
+                CreateAccount("Accounts Receivable", "14", 2, true, AccountType.Asset, assets.Id),
+                CreateAccount("Employee Receivable", "15", 2, true, AccountType.Asset, assets.Id)
+            );
 
-			var liabilities = new FinancialAccount
-			{
-				Name = "Liabilities",
-				Type = AccountType.Liability
-			};
+            await context.SaveChangesAsync();
+        }
 
-			context.FinancialAccounts.Add(liabilities);
-			await context.SaveChangesAsync();
+        public static async Task SeedLiabilityAccountsAsync(ApplicationDbContext context)
+        {
+            if (context.FinancialAccounts.Any(a => a.Type == AccountType.Liability))
+                return;
 
-			context.FinancialAccounts.AddRange(
-				new FinancialAccount
-				{
-					Name = "Accounts Payable",
-					Type = AccountType.Liability,
-					ParentAccountId = liabilities.Id
-				},
-				new FinancialAccount
-				{
-					Name = "Employees Payable",
-					Type = AccountType.Liability,
-					ParentAccountId = liabilities.Id
-				},
-				new FinancialAccount
-				{
-					Name = "VAT Payable",
-					Type = AccountType.Liability,
-					ParentAccountId = liabilities.Id
-				},
-				new FinancialAccount
-				{
-					Name = "Income Tax Payable",
-					Type = AccountType.Liability,
-					ParentAccountId = liabilities.Id
-				},
-				new FinancialAccount
-				{
-					Name = "Bank Loans",
-					Type = AccountType.Liability,
-					ParentAccountId = liabilities.Id
-				}
-			);
+            // Root
+            var liabilities = CreateAccount("Liabilities", "2", 1, false, AccountType.Liability);
 
-			await context.SaveChangesAsync();
-		}
-		public static async Task SeedRevenueAndExpenseAccountsAsync(IServiceProvider serviceProvider)
-		{
-			using var scope = serviceProvider.CreateScope();
-			var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            context.FinancialAccounts.Add(liabilities);
+            await context.SaveChangesAsync();
 
-			if (context.FinancialAccounts.Any(a =>
-				a.Type == AccountType.Revenue || a.Type == AccountType.Expense))
-				return;
+            // Children (Leaf accounts)
+            context.FinancialAccounts.AddRange(
+                CreateAccount("Accounts Payable", "21", 2, true, AccountType.Liability,liabilities.Id),
+                CreateAccount("Employees Payable", "22", 2, true, AccountType.Liability, liabilities.Id),
+                CreateAccount("VAT Payable", "23", 2, true, AccountType.Liability, liabilities.Id),
+                CreateAccount("Income Tax Payable", "24", 2, true, AccountType.Liability, liabilities.Id),
+                CreateAccount("Bank Loans", "25", 2, true, AccountType.Liability, liabilities.Id)
+            );
 
-			// Revenue 
-			var revenue = new FinancialAccount
-			{
-				Name = "Revenue",
-				Type = AccountType.Revenue
-			};
+            await context.SaveChangesAsync();
+        }
+        public static async Task SeedRevenueAndExpenseAccountsAsync(ApplicationDbContext context)
+        {
+            if (context.FinancialAccounts.Any(a =>
+                a.Type == AccountType.Revenue || a.Type == AccountType.Expense))
+                return;
 
-			context.FinancialAccounts.Add(revenue);
-			await context.SaveChangesAsync();
+            // ---------- Revenue ----------
+            var revenue = CreateAccount("Revenue","4",1,false,AccountType.Revenue);
 
-			context.FinancialAccounts.AddRange(
-				new FinancialAccount
-				{
-					Name = "Food Sales",
-					Type = AccountType.Revenue,
-					ParentAccountId = revenue.Id
-				},
-				new FinancialAccount
-				{
-					Name = "Drinks Sales",
-					Type = AccountType.Revenue,
-					ParentAccountId = revenue.Id
-				},
-				new FinancialAccount
-				{
-					Name = "Service Revenue",
-					Type = AccountType.Revenue,
-					ParentAccountId = revenue.Id
-				}
-			);
+            context.FinancialAccounts.Add(revenue);
+            await context.SaveChangesAsync();
 
-			var expenses = new FinancialAccount
-			{
-				Name = "Expenses",
-				Type = AccountType.Expense
-			};
+            context.FinancialAccounts.AddRange(
+                CreateAccount("Food Sales", "41", 2, true, AccountType.Revenue, revenue.Id),
+                CreateAccount("Drinks Sales", "42", 2, true, AccountType.Revenue, revenue.Id),
+                CreateAccount("Service Revenue", "43", 2, true, AccountType.Revenue, revenue.Id)
+            );
 
-			context.FinancialAccounts.Add(expenses);
-			await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
-			context.FinancialAccounts.AddRange(
-				new FinancialAccount
-				{
-					Name = "Cost of Goods Sold (COGS)",
-					Type = AccountType.Expense,
-					ParentAccountId = expenses.Id
-				},
-				new FinancialAccount
-				{
-					Name = "Salaries Expense",
-					Type = AccountType.Expense,
-					ParentAccountId = expenses.Id
-				},
-				new FinancialAccount
-				{
-					Name = "Rent Expense",
-					Type = AccountType.Expense,
-					ParentAccountId = expenses.Id
-				},
-				new FinancialAccount
-				{
-					Name = "Utilities Expense",
-					Type = AccountType.Expense,
-					ParentAccountId = expenses.Id
-				},
-				new FinancialAccount
-				{
-					Name = "Maintenance Expense",
-					Type = AccountType.Expense,
-					ParentAccountId = expenses.Id
-				},
-				new FinancialAccount
-				{
-					Name = "Cash Shortage Expense",
-					Type = AccountType.Expense,
-					ParentAccountId = expenses.Id
-				}
-			);
+            // ---------- Expenses ----------
+            var expenses = CreateAccount("Expenses","5",1,false,AccountType.Expense);
 
-			await context.SaveChangesAsync();
-		}
-		public static async Task SeedEquityAccountsAsync(IServiceProvider serviceProvider)
-		{
-			using var scope = serviceProvider.CreateScope();
-			var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            context.FinancialAccounts.Add(expenses);
+            await context.SaveChangesAsync();
 
-			if (context.FinancialAccounts.Any(a =>
-				a.Name == "Equity" && a.Type == AccountType.Equity))
-				return;
+            context.FinancialAccounts.AddRange(
+                CreateAccount("Cost of Goods Sold (COGS)", "51", 2, true, AccountType.Expense, expenses.Id),
+                CreateAccount("Salaries Expense", "52", 2, true, AccountType.Expense, expenses.Id),
+                CreateAccount("Rent Expense", "53", 2, true, AccountType.Expense, expenses.Id),
+                CreateAccount("Utilities Expense", "54", 2, true, AccountType.Expense, expenses.Id),
+                CreateAccount("Maintenance Expense", "55", 2, true, AccountType.Expense, expenses.Id),
+                CreateAccount("Cash Shortage Expense", "56", 2, true, AccountType.Expense, expenses.Id)
+            );
 
-			var equity = new FinancialAccount
-			{
-				Name = "Equity",
-				Type = AccountType.Equity
-			};
+            await context.SaveChangesAsync();
+        }
+       
+        public static async Task SeedEquityAccountsAsync(ApplicationDbContext context)
+        {
+            if (context.FinancialAccounts.Any(a => a.Type == AccountType.Equity))
+                return;
 
-			context.FinancialAccounts.Add(equity);
-			await context.SaveChangesAsync();
+            var equity = CreateAccount("Equity", "3", 1, false, AccountType.Equity);
 
-			context.FinancialAccounts.AddRange(
-				new FinancialAccount
-				{
-					Name = "Capital",
-					Type = AccountType.Equity,
-					ParentAccountId = equity.Id
-				},
-				new FinancialAccount
-				{
-					Name = "Retained Earnings",
-					Type = AccountType.Equity,
-					ParentAccountId = equity.Id
-				}
-			);
+            context.FinancialAccounts.Add(equity);
+            await context.SaveChangesAsync();
 
-			await context.SaveChangesAsync();
-		}
+            // Children (Leaf)
+            context.FinancialAccounts.AddRange(
+                CreateAccount("Capital", "31", 2, true, AccountType.Equity, equity.Id),
+                CreateAccount("Retained Earnings","32", 2,true,AccountType.Equity,equity.Id)
+            );
 
-	}
+            await context.SaveChangesAsync();
+        }
+
+        private static FinancialAccount CreateAccount(string name,string code,int level,
+                                                                  bool isLeaf,AccountType type,int? parentId = null)
+            =>  new FinancialAccount
+            {
+                Name = name,
+                Code = code,
+                Level = level,
+                IsLeaf = isLeaf,
+                Type = type,
+                ParentAccountId = parentId
+            };
+        
+    }
 
 }

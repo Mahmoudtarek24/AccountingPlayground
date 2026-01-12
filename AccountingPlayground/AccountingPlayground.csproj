@@ -16,13 +16,4 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Application\Dto%27s\" />
-    <Folder Include="Application\Interfaces\" />
-    <Folder Include="Application\Implementation\" />
-    <Folder Include="Controllers\" />
-    <Folder Include="Domain\Interfaces\" />
-    <Folder Include="Infrastructure\Implementation\" />
-  </ItemGroup>
-
 </Project>
