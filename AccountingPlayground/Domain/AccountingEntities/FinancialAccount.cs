@@ -5,10 +5,10 @@
 		public int Id { get; set; }
 		public string Name { get; set; }
 		public AccountType Type { get; set; }
-        public string Code { get; set; }
+        public string? Code { get; set; }
         public int Level { get; set; }
         public bool IsLeaf { get; set; } // true only for leaf node have "doubly entry"
-
+		public bool IsActive { get; set; }	
         public int? ParentAccountId { get; set; }
 		public FinancialAccount ParentAccount { get; set; }		
 		public ICollection<FinancialAccount> Children { get; set; }

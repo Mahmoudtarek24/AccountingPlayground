@@ -6,5 +6,6 @@ namespace AccountingPlayground.Domain.Interfaces
     {
         Task<List<FinancialAccount>> GetChartOfAccountsTreeAsync();
         Task<FinancialAccount?> GetByIdAsync(int Id);
+        Task<bool> IsValidName(int parentAccountId, string name);
     }
 }

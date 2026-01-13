@@ -1,4 +1,5 @@
-﻿using AccountingPlayground.Application.Interfaces;
+﻿using AccountingPlayground.Application.Dto_s;
+using AccountingPlayground.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,12 +15,26 @@ namespace AccountingPlayground.Controllers
             this.financialService = financialAccountService;
         }
 
-
-        [HttpGet("allTree")]
-        public async Task<IActionResult> Get()
+        [HttpGet("tree")]
+        public async Task<IActionResult> GetChartOfAccountsTree()
         {
             var result = await financialService.GetChartOfAccountsTree();
             return Ok(result);
         }
+
+        [HttpGet("{id:int:min(1)}")]
+        public async Task<IActionResult> GetById(int Id)
+        {
+            var result = await financialService.GetById(Id);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateFinancialAccountDto dto)
+        {
+            var result = await financialService.CreateFinancialAccount(dto);        
+            return Ok(result);      
+        }
+
     }
 }

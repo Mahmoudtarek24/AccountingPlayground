@@ -5,7 +5,8 @@ namespace AccountingPlayground.Application.Interfaces
 {
     public interface IFinancialAccountService
     {
-        Task<List<FinancialAccount>> GetChartOfAccountsTree();
+        Task<List<FinancialAccount>> GetChartOfAccountsTree();  
         Task<int> CreateFinancialAccount(CreateFinancialAccountDto dto);
+        Task<FinancialAccount> GetById(int id); 
     }
 }

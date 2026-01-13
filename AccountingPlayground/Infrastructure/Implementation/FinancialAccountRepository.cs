@@ -14,10 +14,12 @@ namespace AccountingPlayground.Infrastructure.Implementation
         }
 
         public async Task<FinancialAccount?> GetByIdAsync(int Id)
-        {
-            return await context.FinancialAccounts.FirstOrDefaultAsync(x => x.Id == Id);        
-        }
-        
+            => await context.FinancialAccounts.FirstOrDefaultAsync(x => x.Id == Id);
+
+        public async Task<bool> IsValidName(int parentAccountId, string name) =>
+          !await context.FinancialAccounts.AnyAsync(e =>
+                      e.ParentAccountId == parentAccountId && e.Name == name);
+    
 
         public async Task<List<FinancialAccount>> GetChartOfAccountsTreeAsync()
         {
