@@ -11,7 +11,7 @@ namespace AccountingPlayground.Infrastructure.Implementation
         {
             this.context = context; 
         }
-        public async Task<bool> IsClosedAsync(int year)
+        public async Task<bool> IsOpenAsync(int year)
             =>      await context.FinancialYear
                       .AnyAsync(fy => fy.Year == year && !fy.IsClosed);
     }

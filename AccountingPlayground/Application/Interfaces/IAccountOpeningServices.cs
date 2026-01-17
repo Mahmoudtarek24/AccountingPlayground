@@ -5,10 +5,8 @@ namespace AccountingPlayground.Application.Interfaces
     public interface IAccountOpeningServices
     {
         Task<IEnumerable<AccountDto>> GetEligibleAccounts();
-
-        //IEnumerable<OpeningBalanceDto> GetOpeningBalance(int year);
-
-        Task<bool> CreateOpeningBalance(CreateOpeningBalanceDto dto);
+        Task<OpeningBalanceResponseDto> GetOpeningBalance(int year);
+        Task<bool> CreateOpeningBalance(CreateOpeningBalanceDto createDto);
 
         //OpeningBalanceValidationResult ValidateOpeningBalance(
         //    ValidateOpeningBalanceRequest request);

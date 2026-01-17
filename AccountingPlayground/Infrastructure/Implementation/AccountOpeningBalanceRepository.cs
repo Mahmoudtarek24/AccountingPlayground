@@ -29,8 +29,15 @@ namespace AccountingPlayground.Infrastructure.Implementation
             return result;  
         }
 
+        public async Task<IEnumerable<AccountOpeningBalance>> GetOpeningBalancesByYear(int year)
+            => await context.AccountOpeningBalances
+                .Include(ob => ob.FinancialAccount)
+                .Include(ob => ob.FinancialYear)
+                .Where(ob => ob.FinancialYear.Year == year)
+                .ToListAsync(); 
+
         public async Task<List<int>> GetValidOpeningBalancesAsync(List<int> accountIds)
-            =>   await context.AccountOpeningBalances.Include(e=>e.FinancialAccount)
+            =>   await context.AccountOpeningBalances
                 .Where(e => accountIds.Contains(e.FinancialAccountId)&&e.FinancialYear.Year==DateTime.Now.Year)
                 .Select(ob => ob.FinancialAccountId).ToListAsync(); 
     }

@@ -7,8 +7,6 @@
     public class OpeningBalanceItemDto
     {
         public int AccountId { get; set; }
-
-        // Absolute value
         public decimal Amount { get; set; }
     }
 }

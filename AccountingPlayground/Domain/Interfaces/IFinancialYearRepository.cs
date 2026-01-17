@@ -4,7 +4,7 @@ namespace AccountingPlayground.Domain.Interfaces
 {
     public interface IFinancialYearRepository
     {
-        Task<bool> IsClosedAsync(int year);
+        Task<bool> IsOpenAsync(int year);
         //FinancialYear GetCurrentAsync();
         // FinancialYear GetByYear(int year);
     }
