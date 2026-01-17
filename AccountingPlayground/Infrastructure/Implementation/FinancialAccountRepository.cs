@@ -7,6 +7,13 @@ namespace AccountingPlayground.Infrastructure.Implementation
 {
     public class FinancialAccountRepository : IFinancialAccountRepository
     {
+        private readonly AccountType[] allowedAccountTypes = new[]
+        {
+                AccountType.Asset,
+                AccountType.Liability,
+                AccountType.Equity,
+        };  
+
         private readonly ApplicationDbContext context;
         public FinancialAccountRepository(ApplicationDbContext context)
         {
@@ -34,5 +41,10 @@ namespace AccountingPlayground.Infrastructure.Implementation
 
             return lookup[null].ToList();
         }
+
+        public async Task<List<int>> GetValidAccountIdsAsync(List<int> accountIds)
+            => await context.FinancialAccounts
+            .Where(e => accountIds.Contains(e.Id)&& allowedAccountTypes.Contains(e.Type)&&e.IsLeaf)
+            .Select(a => a.Id).ToListAsync();
     }
 }

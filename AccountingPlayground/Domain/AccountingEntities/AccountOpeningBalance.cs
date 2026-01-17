@@ -7,8 +7,11 @@
 		public int FinancialAccountId { get; set; }
 		public FinancialAccount FinancialAccount { get; set; }
 
-		public DateTime OpeningDate { get; set; }
+        public int FinancialYearId { get; set; }
+        public FinancialYear FinancialYear { get; set; }
+
 		public long OpeningDebit { get; set; }
 		public long OpeningCredit { get; set; }
 	}
 }
+// one FinancialAccountId with year 

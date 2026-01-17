@@ -29,9 +29,10 @@ namespace AccountingPlayground.Infrastructure.Context
 		public DbSet<Expense> Expenses { get; set; }
 		public DbSet<IncomeTax> IncomeTaxes { get; set; }
 		public DbSet<VatReturn> VatReturns { get; set; }
+		public DbSet<FinancialYear> FinancialYear { get; set; }	
 
 
-		public DbSet<Employee> Employees { get; set; }
+        public DbSet<Employee> Employees { get; set; }
 		public DbSet<Customer> Customers { get; set; }
 		public DbSet<Supplier> Suppliers { get; set; }
 		public DbSet<SalesInvoice> SalesInvoices { get; set; }

@@ -87,9 +87,6 @@ namespace AccountingPlayground.Application.Implementation
                 .Max();
 
             return parent.Code + (maxSuffix + 1);
-        }
-
-       
+        } 
     }
-
 }
