@@ -8,7 +8,7 @@ namespace AccountingPlayground.Domain.Interfaces
         Task<IEnumerable<FinancialAccount>> GetEligibleAccountsForOpeningBalanceAsync();
         Task<List<int>> GetValidOpeningBalancesAsync(List<int> accountIds);
 
-        Task<IEnumerable<AccountOpeningBalance>> GetOpeningBalancesByYear(int year);
+        Task<IEnumerable<AccountOpeningBalance>> GetOpeningBalancesByYearAsync(int year);
 
         //bool OpeningBalanceExists(int year);
 

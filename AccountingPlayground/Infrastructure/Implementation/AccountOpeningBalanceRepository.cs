@@ -29,7 +29,7 @@ namespace AccountingPlayground.Infrastructure.Implementation
             return result;  
         }
 
-        public async Task<IEnumerable<AccountOpeningBalance>> GetOpeningBalancesByYear(int year)
+        public async Task<IEnumerable<AccountOpeningBalance>> GetOpeningBalancesByYearAsync(int year)
             => await context.AccountOpeningBalances
                 .Include(ob => ob.FinancialAccount)
                 .Include(ob => ob.FinancialYear)

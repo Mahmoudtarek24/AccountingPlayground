@@ -41,73 +41,7 @@ namespace AccountingPlayground.Application.Implementation
         }
 
 
-
         public async Task<bool> CreateOpeningBalance(CreateOpeningBalanceDto createDto)
-        {
-            if (!createDto.Items.Any())
-                return false;
-
-            //opening year 
-            if (await financialYearRepository.IsOpenAsync(DateTime.Now.Year))
-                return false;
-
-            
-            // check for account is valid "leaf and exist , type asset ,Liability ,Equity" if not valid will return it 
-            var accountIds = createDto.Items.Select(e => e.AccountId).Distinct().ToList();
-            var validAccount = await financialAccountRepository.GetValidAccountIdsAsync(accountIds);
-
-            var notValidAccountIds = accountIds.Except(validAccount).ToList();      // Will return to user to know that will not apply 
-
-            if (!validAccount.Any())
-                return false;
-
-            //مفيش Opening Balance قبل كده
-            var validForOpeningBalance = await accountOpeningBalanceRepository.GetValidOpeningBalancesAsync(validAccount);
-
-            var alreadyHaveOpeningBalance = validAccount.Except(validForOpeningBalance).ToList();  // Will return to user to know that will not apply 
-
-            if (validForOpeningBalance.Any())
-                return false;
-
-
-            foreach (var item in validForOpeningBalance)
-            {
-                var financialAccount = await financialAccountRepository.GetByIdAsync(item);
-
-                var openingBalance = new AccountOpeningBalance
-                {
-                    FinancialAccountId = item,
-                    //FinancialYearId
-                };
-
-                switch (financialAccount.Type)
-                {
-                    case AccountType.Asset:
-                        openingBalance.OpeningCredit = 0;
-                        openingBalance.OpeningDebit = (long)createDto.Items.Where(e => e.AccountId == item).Sum(e => e.Amount);
-                        break;
-
-                    case AccountType.Liability:
-                    case AccountType.Equity:
-                        openingBalance.OpeningCredit = (long)createDto.Items.Where(e => e.AccountId == item).Sum(e => e.Amount);
-                        openingBalance.OpeningDebit = 0;
-                        break;
-
-                    default:
-                        return false;
-                }
-                context.AccountOpeningBalances.Add(openingBalance);
-            }
-
-            var balancing = context.AccountOpeningBalances.Local.Sum(e => e.OpeningDebit) - context.AccountOpeningBalances.Local.Sum(e => e.OpeningCredit);
-
-            if (balancing != 0)
-                return false;
-
-            await context.SaveChangesAsync();
-            return true;
-        }
-        public async Task<bool> CreateOpeningBalances(CreateOpeningBalanceDto createDto)
         {
             if (createDto == null || !createDto.Items.Any())
                 return false;
@@ -160,12 +94,12 @@ namespace AccountingPlayground.Application.Implementation
                 {
                     case AccountType.Asset:
                         openingBalance.OpeningDebit = (long)amount;
-                        break;
+                    break;
 
                     case AccountType.Liability:
                     case AccountType.Equity:
                         openingBalance.OpeningCredit = (long)amount;
-                        break;
+                    break;
 
                     default:
                         return false;
@@ -196,5 +130,23 @@ namespace AccountingPlayground.Application.Implementation
             }
         }
 
+        public async Task<OpeningBalanceResponseDto> GetOpeningBalance(int year)
+        {
+            var result = await accountOpeningBalanceRepository.GetOpeningBalancesByYearAsync(year);
+
+
+            return new OpeningBalanceResponseDto
+            {
+                FinancialYear = year,
+                Accounts = result.Select(ob => new OpeningBalanceAccountDto
+                {
+                    AccountId = ob.FinancialAccount.Id,
+                    AccountName = ob.FinancialAccount.Name,
+                    Type = ob.FinancialAccount.Type,
+                    Debit = ob.OpeningDebit,
+                    Credit = ob.OpeningCredit
+                }).ToList()
+            };
+        }
     }
 }
