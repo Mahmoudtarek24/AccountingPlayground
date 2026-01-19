@@ -78,7 +78,7 @@ namespace AccountingPlayground.Application.Implementation
             foreach (var account in accounts)
             {
                 var amount = createDto.Items
-                             .Where(e => e.AccountId == account.Id).Sum(e => e.Amount);
+                             .Where(e => e.AccountId == account.Id).Sum(e => e.AmountInCents);
 
                 if (amount <= 0)
                     return false;
