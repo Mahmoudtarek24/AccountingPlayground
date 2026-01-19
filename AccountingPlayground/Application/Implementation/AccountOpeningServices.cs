@@ -1,4 +1,5 @@
-﻿using AccountingPlayground.Application.Dto_s;
+﻿using AccountingPlayground.Application.Adapters;
+using AccountingPlayground.Application.Dto_s;
 using AccountingPlayground.Application.Interfaces;
 using AccountingPlayground.Domain.AccountingEntities;
 using AccountingPlayground.Domain.Interfaces;
@@ -41,7 +42,7 @@ namespace AccountingPlayground.Application.Implementation
         }
 
 
-        public async Task<bool> CreateOpeningBalance(CreateOpeningBalanceDto createDto)
+        public async Task<bool> CreateOpeningBalance(CreateOpeningBalanceCommand createDto)
         {
             if (createDto == null || !createDto.Items.Any())
                 return false;

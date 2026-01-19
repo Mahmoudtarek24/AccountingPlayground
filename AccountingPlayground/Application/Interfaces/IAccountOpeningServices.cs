@@ -1,4 +1,5 @@
-﻿using AccountingPlayground.Application.Dto_s;
+﻿using AccountingPlayground.Application.Adapters;
+using AccountingPlayground.Application.Dto_s;
 
 namespace AccountingPlayground.Application.Interfaces
 {
@@ -6,7 +7,7 @@ namespace AccountingPlayground.Application.Interfaces
     {
         Task<IEnumerable<AccountDto>> GetEligibleAccounts();
         Task<OpeningBalanceResponseDto> GetOpeningBalance(int year);
-        Task<bool> CreateOpeningBalance(CreateOpeningBalanceDto createDto);
+        Task<bool> CreateOpeningBalance(CreateOpeningBalanceCommand createDto);
 
         //OpeningBalanceValidationResult ValidateOpeningBalance(
         //    ValidateOpeningBalanceRequest request);

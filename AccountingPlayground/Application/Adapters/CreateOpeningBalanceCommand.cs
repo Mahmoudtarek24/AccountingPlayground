@@ -1,6 +1,23 @@
 ﻿namespace AccountingPlayground.Application.Adapters
 {
-    public class OpeningBalanceItemCommand
-    {
-    }
+	public class CreateOpeningBalanceCommand
+	{
+		public IReadOnlyList<OpeningBalanceItemCommand> Items { get; }
+
+		public CreateOpeningBalanceCommand(IReadOnlyList<OpeningBalanceItemCommand> items)
+		{
+			Items = items;
+		}
+	}
+	public class OpeningBalanceItemCommand
+	{
+		public int AccountId { get; }
+		public long AmountInCents { get; }
+
+		public OpeningBalanceItemCommand(int accountId, long amountInCents)
+		{
+			AccountId = accountId;
+			AmountInCents = amountInCents;
+		}
+	}
 }
