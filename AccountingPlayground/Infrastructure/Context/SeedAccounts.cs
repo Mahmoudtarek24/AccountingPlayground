@@ -13,8 +13,7 @@ namespace AccountingPlayground.Infrastructure.Context
             await SeedLiabilityAccountsAsync(context);
             await SeedRevenueAndExpenseAccountsAsync(context);
             await SeedEquityAccountsAsync(context);
-        }
-
+        } 
         public static async Task SeedAssetAccountsAsync(ApplicationDbContext context)
         {
             if (context.FinancialAccounts.Any(a => a.Type == AccountType.Asset))
@@ -72,7 +71,6 @@ namespace AccountingPlayground.Infrastructure.Context
 
             await context.SaveChangesAsync();
         }
-
         public static async Task SeedLiabilityAccountsAsync(ApplicationDbContext context)
         {
             if (context.FinancialAccounts.Any(a => a.Type == AccountType.Liability))
@@ -131,8 +129,7 @@ namespace AccountingPlayground.Infrastructure.Context
             );
 
             await context.SaveChangesAsync();
-        }
-       
+        }   
         public static async Task SeedEquityAccountsAsync(ApplicationDbContext context)
         {
             if (context.FinancialAccounts.Any(a => a.Type == AccountType.Equity))

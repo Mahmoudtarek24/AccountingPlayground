@@ -1,4 +1,5 @@
-﻿using AccountingPlayground.Application.Dto_s;
+﻿using AccountingPlayground.Application.Adapters;
+using AccountingPlayground.Application.Dto_s;
 using AccountingPlayground.Application.Interfaces;
 using AccountingPlayground.Domain.AccountingEntities;
 using AccountingPlayground.Domain.Interfaces;
@@ -41,7 +42,7 @@ namespace AccountingPlayground.Application.Implementation
         }
 
 
-        public async Task<bool> CreateOpeningBalance(CreateOpeningBalanceDto createDto)
+        public async Task<bool> CreateOpeningBalance(CreateOpeningBalanceCommand createDto)
         {
             if (createDto == null || !createDto.Items.Any())
                 return false;
@@ -93,12 +94,12 @@ namespace AccountingPlayground.Application.Implementation
                 switch (account.Type)
                 {
                     case AccountType.Asset:
-                        openingBalance.OpeningDebit = (long)amount;
+                        openingBalance.OpeningDebit = amount;
                     break;
 
                     case AccountType.Liability:
                     case AccountType.Equity:
-                        openingBalance.OpeningCredit = (long)amount;
+                        openingBalance.OpeningCredit = amount;
                     break;
 
                     default:
@@ -148,5 +149,62 @@ namespace AccountingPlayground.Application.Implementation
                 }).ToList()
             };
         }
-    }
+
+		public void CarryForward(int fromYear, int toYear)
+		{
+            // first we need to calculate "Net Income"
+            // Net Income =  Total Revenues − Total Expenses , calculate it from history of Journal Entries of year
+
+            // first calculate Total Revenues
+            // 1 - will get leaf node of Revenue type , then get her Journal Entries
+
+            var revenueLinesByAccount = context.JournalEntryLines
+                                        .Include(e => e.JournalEntry)
+                                        .Include(e => e.FinancialAccount)
+                                        .Where(e =>
+                                            e.FinancialAccount.IsLeaf &&
+                                            e.FinancialAccount.Type == AccountType.Revenue &&
+                                            e.JournalEntry.Date.Year == fromYear
+                                        ).GroupBy(e => e.FinancialAccountId)
+                                        .Select(e => new
+                                        {
+                                            AccountId = e.Key,
+                                            Lines = e.ToList()
+                                        }).ToList();
+
+            long totalDepit = 0;
+            long totalCredit = 0;
+            long totalRevenue = 0;
+            foreach(var calc in revenueLinesByAccount)
+            {
+
+                foreach(var cal in calc.Lines)
+                {
+                    totalCredit += cal.Credit;
+                    totalDepit += cal.Debit;
+
+                }
+                totalRevenue += totalCredit + totalDepit;
+			}
+
+
+			//long totalRevenue = 0;
+
+			//foreach (var accountGroup in revenueLinesByAccount)
+			//{
+			//	long accountRevenue = 0;
+
+			//	foreach (var line in accountGroup.Lines)
+			//	{
+			//		// Revenue = Credit - Debit
+			//		accountRevenue += (line.Credit - line.Debit);
+			//	}
+
+			//	totalRevenue += accountRevenue;
+			//}
+
+
+
+		}
+	}
 }
