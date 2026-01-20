@@ -16,7 +16,7 @@ namespace AccountingPlayground.Application.Interfaces
 
         //OpeningBalanceStatus GetStatus(int year);
 
-        //void CarryForward(int fromYear, int toYear);
+        void CarryForward(int fromYear, int toYear);
 
         //IEnumerable<OpeningBalanceAuditDto> GetAuditLog(int year);
 

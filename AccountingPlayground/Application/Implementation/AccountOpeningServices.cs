@@ -149,5 +149,61 @@ namespace AccountingPlayground.Application.Implementation
                 }).ToList()
             };
         }
+        public void CarryForward(int fromYear, int toYear)
+        {
+            // first we need to calculate "Net Income"
+            // Net Income =  Total Revenues − Total Expenses , calculate it from history of Journal Entries of year
+
+            // first calculate Total Revenues
+            // 1 - will get leaf node of Revenue type , then get her Journal Entries
+
+            var revenueLinesByAccount = context.JournalEntryLines
+                                        .Include(e => e.JournalEntry)
+                                        .Include(e => e.FinancialAccount)
+                                        .Where(e =>
+                                            e.FinancialAccount.IsLeaf &&
+                                            e.FinancialAccount.Type == AccountType.Revenue &&
+                                            e.JournalEntry.Date.Year == fromYear
+                                        ).GroupBy(e => e.FinancialAccountId)
+                                        .Select(e => new
+                                        {
+                                            AccountId = e.Key,
+                                            Lines = e.ToList()
+                                        }).ToList();
+
+            long totalDepit = 0;
+            long totalCredit = 0;
+            long totalRevenue = 0;
+            foreach (var calc in revenueLinesByAccount)
+            {
+
+                foreach (var cal in calc.Lines)
+                {
+                    totalCredit += cal.Credit;
+                    totalDepit += cal.Debit;
+
+                }
+                totalRevenue += totalCredit + totalDepit;
+            }
+
+
+            //long totalRevenue = 0;
+
+            //foreach (var accountGroup in revenueLinesByAccount)
+            //{
+            //	long accountRevenue = 0;
+
+            //	foreach (var line in accountGroup.Lines)
+            //	{
+            //		// Revenue = Credit - Debit
+            //		accountRevenue += (line.Credit - line.Debit);
+            //	}
+
+            //	totalRevenue += accountRevenue;
+            //}
+
+
+
+        }
     }
 }
