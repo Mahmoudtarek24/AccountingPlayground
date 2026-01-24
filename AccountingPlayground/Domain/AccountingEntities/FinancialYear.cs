@@ -2,11 +2,14 @@
 {
     public class FinancialYear
     {
+        public int Id { get; set; }
         public int Year { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
         public bool IsClosed { get; set; }
         public DateTime? ClosedAt { get; set; }
+
+        public ICollection<JournalEntry> JournalEntries { get; set; }   
     }
 }

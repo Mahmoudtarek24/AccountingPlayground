@@ -19,6 +19,8 @@ namespace AccountingPlayground.Infrastructure.Configurations
 				.HasForeignKey(e=>e.ParentAccountId).OnDelete(DeleteBehavior.Restrict);
 			builder.Property(e => e.Name).HasMaxLength(120);
 
+			builder.Property(e => e.SystemRole).HasConversion<string>()
+				.HasDefaultValue(SystemAccountType.None);
 			builder.HasIndex(e => new { e.Type, e.Code }).IsUnique();
 			builder.HasCheckConstraint("CK_NoSelfParent", "[ParentAccountId] is null or [Id]<>[ParentAccountId]");
 		}

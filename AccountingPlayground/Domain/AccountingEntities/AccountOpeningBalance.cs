@@ -1,4 +1,7 @@
-﻿namespace AccountingPlayground.Domain.AccountingEntities
+﻿using AccountingPlayground.Domain.AccountingEntities.Enums;
+using AccountingPlayground.Domain.Entities;
+
+namespace AccountingPlayground.Domain.AccountingEntities
 {
 	public class AccountOpeningBalance
 	{ 
@@ -14,4 +17,5 @@
 		public long OpeningCredit { get; set; }
 	}
 }
-// one FinancialAccountId with year 
+// one FinancialAccountId with year
+

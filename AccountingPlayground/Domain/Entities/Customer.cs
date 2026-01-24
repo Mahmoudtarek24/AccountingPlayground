@@ -1,4 +1,7 @@
-﻿namespace AccountingPlayground.Domain.Entities
+﻿using AccountingPlayground.Domain.AccountingEntities;
+using Microsoft.EntityFrameworkCore;
+
+namespace AccountingPlayground.Domain.Entities
 {
 	public class Customer
 	{

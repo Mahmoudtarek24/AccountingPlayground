@@ -143,14 +143,15 @@ namespace AccountingPlayground.Infrastructure.Context
             // Children (Leaf)
             context.FinancialAccounts.AddRange(
                 CreateAccount("Capital", "31", 2, true, AccountType.Equity, equity.Id),
-                CreateAccount("Retained Earnings","32", 2,true,AccountType.Equity,equity.Id)
+                CreateAccount("Retained Earnings","32", 2,true,AccountType.Equity,equity.Id, SystemAccountType.RetainedEarnings)
             );
 
             await context.SaveChangesAsync();
         }
 
-        private static FinancialAccount CreateAccount(string name,string code,int level,
-                                                                  bool isLeaf,AccountType type,int? parentId = null)
+        private static FinancialAccount CreateAccount(string name, string code, int level, bool isLeaf,
+                                                      AccountType type,int? parentId = null ,
+                                                      SystemAccountType systemAccount = SystemAccountType.None) 
             =>  new FinancialAccount
             {
                 Name = name,
@@ -158,7 +159,8 @@ namespace AccountingPlayground.Infrastructure.Context
                 Level = level,
                 IsLeaf = isLeaf,
                 Type = type,
-                ParentAccountId = parentId
+                ParentAccountId = parentId,
+                SystemRole = systemAccount
             };
         
     }

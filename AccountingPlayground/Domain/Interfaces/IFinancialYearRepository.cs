@@ -7,5 +7,7 @@ namespace AccountingPlayground.Domain.Interfaces
         Task<bool> IsOpenAsync(int year);
         //FinancialYear GetCurrentAsync();
         // FinancialYear GetByYear(int year);
+
+        Task<bool> IsPostingAllowedAsync(DateTime entryDate);
     }
 }

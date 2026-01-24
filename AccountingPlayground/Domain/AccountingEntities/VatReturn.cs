@@ -1,4 +1,7 @@
-﻿namespace AccountingPlayground.Domain.AccountingEntities
+﻿using AccountingPlayground.Domain.AccountingEntities.Enums;
+using AccountingPlayground.Domain.Entities;
+
+namespace AccountingPlayground.Domain.AccountingEntities
 {
 	public class VatReturn
 	{

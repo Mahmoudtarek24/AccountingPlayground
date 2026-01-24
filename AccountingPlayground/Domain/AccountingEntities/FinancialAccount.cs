@@ -15,9 +15,14 @@
 
 		public  ICollection<AccountOpeningBalance> OpeningBalance { get; set; }
 
-	}
-
-	public enum AccountType
+        public SystemAccountType SystemRole { get; set; }
+    }
+    public enum SystemAccountType
+    {
+        None = 0,
+        RetainedEarnings = 1,
+    }
+    public enum AccountType
 	{
 		Asset = 1,
 		Liability = 2,
