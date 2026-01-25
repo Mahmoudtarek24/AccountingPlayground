@@ -1,6 +1,6 @@
 ﻿namespace AccountingPlayground.Application.Interfaces
 {
-	public interface Interface
+	public interface IPaymentVoucherServices
 	{
 	}
 }

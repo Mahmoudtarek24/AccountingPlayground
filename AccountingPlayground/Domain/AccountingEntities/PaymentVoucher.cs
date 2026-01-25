@@ -9,8 +9,8 @@ namespace AccountingPlayground.Domain.AccountingEntities
 		public string VoucherNo { get; set; }	
 		public DateTime VoucherDate { get; set; }
 		public PaymentMethod PaymentMethod { get; set; }
-		public PaymentReferenceType ReferenceType { get; set; }
-		public int ReferenceId { get; set; }   // Supplier / Tax / Expense
+		//public PaymentReferenceType ReferenceType { get; set; }
+		//public int ReferenceId { get; set; }   // Supplier / Tax / Expense
 
 		public long NetAmount { get; set; }      // المصروف
 		public long VatAmount { get; set; }      // الضريبة
@@ -22,7 +22,7 @@ namespace AccountingPlayground.Domain.AccountingEntities
 		public int? CashSessionId { get; set; }    
 		public CashSession? CashSession { get; set; }
 
-		public ICollection<PaymentVoucherLine> paymentVoucherLines { get; set; }	
+		public ICollection<PaymentVoucherLine> PaymentVoucherLines { get; set; }	
 	}
 	public enum PaymentMethod
 	{
