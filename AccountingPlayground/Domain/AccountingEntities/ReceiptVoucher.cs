@@ -21,4 +21,9 @@ namespace AccountingPlayground.Domain.AccountingEntities
 		public CashSession? CashSession { get; set; }
 
 	}
+	public enum ReceiptReferenceType
+	{
+		Customer = 1,
+		Other = 2
+	}
 }

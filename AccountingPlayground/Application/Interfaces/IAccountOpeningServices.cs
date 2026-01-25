@@ -3,7 +3,7 @@ using AccountingPlayground.Application.Dto_s;
 
 namespace AccountingPlayground.Application.Interfaces
 {
-    public interface IAccountOpeningServices
+	public interface IAccountOpeningServices
     {
         Task<IEnumerable<AccountDto>> GetEligibleAccounts();
         Task<OpeningBalanceResponseDto> GetOpeningBalance(int year);

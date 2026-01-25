@@ -8,7 +8,7 @@
 		public long NetAmount { get; set; }   
 		public long VatAmount { get; set; }  
 
-		public int CustomerId { get; set; }
+		public int? CustomerId { get; set; }
 		public Customer Customer { get; set; }
 
 		public List<SalesInvoiceLine> Lines { get; set; } = new();
