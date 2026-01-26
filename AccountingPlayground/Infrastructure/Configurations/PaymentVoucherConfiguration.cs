@@ -31,7 +31,7 @@ namespace AccountingPlayground.Infrastructure.Configurations
 				.HasForeignKey(e => e.CashSessionId)
 				.OnDelete(DeleteBehavior.Restrict);
 
-			builder.HasCheckConstraint("CK_PaymentVoucher_PositiveAmount", "[Amount] > 0" );
+			//builder.HasCheckConstraint("CK_PaymentVoucher_PositiveAmount", "[Amount] > 0" );
 		}
 	}
 }

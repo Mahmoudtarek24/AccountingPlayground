@@ -3,7 +3,7 @@ using AccountingPlayground.Infrastructure.Context;
 
 namespace AccountingPlayground.Domain.Interfaces
 {
-    public interface IAccountOpeningBalanceRepository
+	public interface IAccountOpeningBalanceRepository
     {
         Task<IEnumerable<FinancialAccount>> GetEligibleAccountsForOpeningBalanceAsync();
         Task<List<int>> GetValidOpeningBalancesAsync(List<int> accountIds);
