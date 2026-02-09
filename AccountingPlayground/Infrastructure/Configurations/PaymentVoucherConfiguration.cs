@@ -16,10 +16,8 @@ namespace AccountingPlayground.Infrastructure.Configurations
 				.IsRequired().HasMaxLength(50);
 
 			builder.HasIndex(e => e.VoucherNo).IsUnique();
-
 			builder.Property(e => e.VoucherDate).IsRequired();
-
-			builder.Property(e => e.PaymentMethod).IsRequired();
+			builder.Property(e => e.PaymentMethod).HasConversion<string>().IsRequired();
 
 			builder.HasOne(e => e.Employee)
 				.WithMany()

@@ -8,5 +8,6 @@ namespace AccountingPlayground.Domain.Interfaces
         Task<FinancialAccount?> GetByIdAsync(int Id);
         Task<bool> IsValidName(int parentAccountId, string name);
         Task<List<int>> GetValidAccountIdsAsync(List<int> accountIds);
+        Task<List<int>> GetValidAnyAccountTypeIdsAsync(List<int> accountIds);
     }
 }

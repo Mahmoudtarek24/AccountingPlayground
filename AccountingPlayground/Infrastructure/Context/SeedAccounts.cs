@@ -88,8 +88,9 @@ namespace AccountingPlayground.Infrastructure.Context
                 CreateAccount("Employees Payable", "22", 2, true, AccountType.Liability, liabilities.Id),
                 CreateAccount("VAT Payable", "23", 2, true, AccountType.Liability, liabilities.Id),
                 CreateAccount("Income Tax Payable", "24", 2, true, AccountType.Liability, liabilities.Id),
-                CreateAccount("Bank Loans", "25", 2, true, AccountType.Liability, liabilities.Id)
-            );
+                CreateAccount("Bank Loans", "25", 2, true, AccountType.Liability, liabilities.Id),
+                CreateAccount("Withholding Tax Payable","26",2,true,AccountType.Liability,liabilities.Id,SystemAccountType.WithholdingTaxPayable)
+                );
 
             await context.SaveChangesAsync();
         }

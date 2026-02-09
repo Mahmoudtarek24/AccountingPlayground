@@ -46,5 +46,11 @@ namespace AccountingPlayground.Infrastructure.Implementation
             => await context.FinancialAccounts
             .Where(e => accountIds.Contains(e.Id)&& allowedAccountTypes.Contains(e.Type)&&e.IsLeaf)
             .Select(a => a.Id).ToListAsync();
+
+
+        public async Task<List<int>> GetValidAnyAccountTypeIdsAsync(List<int> accountIds)
+            => await context.FinancialAccounts
+            .Where(e => accountIds.Contains(e.Id) && e.IsLeaf)
+            .Select(a => a.Id).ToListAsync();
     }
 }
