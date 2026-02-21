@@ -15,7 +15,8 @@ namespace AccountingPlayground.Infrastructure.Configurations
 			builder.Property(e => e.VoucherNo)
 				.IsRequired().HasMaxLength(50);
 
-			builder.HasIndex(e => e.VoucherNo).IsUnique();
+			builder.Property(e=>e.IsReversed).HasDefaultValue(false);	
+            builder.HasIndex(e => e.VoucherNo).IsUnique();
 			builder.Property(e => e.VoucherDate).IsRequired();
 			builder.Property(e => e.PaymentMethod).HasConversion<string>().IsRequired();
 
@@ -30,6 +31,10 @@ namespace AccountingPlayground.Infrastructure.Configurations
 				.OnDelete(DeleteBehavior.Restrict);
 
 			//builder.HasCheckConstraint("CK_PaymentVoucher_PositiveAmount", "[Amount] > 0" );
-		}
+
+			builder.HasOne(e=>e.JournalEntry).WithOne()
+				.HasForeignKey<PaymentVoucher>(e=>e.JournalEntryId)
+				.OnDelete(DeleteBehavior.Restrict);
+        }
 	}
 }

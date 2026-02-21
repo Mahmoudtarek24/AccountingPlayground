@@ -10,5 +10,10 @@
 
         public int FinancialYearId { get; set; }
 		public FinancialYear FinancialYear { get; set; }
+
+		public bool IsReversal { get; set; } // indicate if this entry is a reversal entry	
+        public int? OriginalEntryId { get; set; } 
+		public JournalEntry OriginalEntry { get; set; } // represent reversed entry 
+        public JournalEntry ReversalEntry { get; set; }
     }
 }

@@ -6,7 +6,7 @@ namespace AccountingPlayground.Application.Interfaces
     {
         Task<JournalEntryError> PostJournalEntry(JournalEntryPostModel request);
 
-        //ReverseJournalEntry  Replace Delete  قيد عكسي
+        Task<bool> ReverseJournalEntry(int entryId , ReversalOptions  options = null);  
 
         // LockPeriod   قفل شهور   قفل أيام
     }

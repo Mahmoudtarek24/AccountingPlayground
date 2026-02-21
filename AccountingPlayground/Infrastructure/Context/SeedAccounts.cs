@@ -70,6 +70,29 @@ namespace AccountingPlayground.Infrastructure.Context
             );
 
             await context.SaveChangesAsync();
+
+            // Supplier Advances
+            context.FinancialAccounts.AddRange(
+                CreateAccount("Supplier Advances", "16", 2, false, AccountType.Asset, assets.Id, SystemAccountType.SupplierAdvances)
+            );
+
+            await context.SaveChangesAsync();
+
+
+            // Prepaid Expenses 
+            var prepaidExpenses = CreateAccount(
+                "Prepaid Expenses",
+                "17",
+                2,
+                true,
+                AccountType.Asset,
+                assets.Id,
+                SystemAccountType.PrepaidExpenses
+            );
+
+            context.FinancialAccounts.Add(prepaidExpenses);
+            await context.SaveChangesAsync();
+
         }
         public static async Task SeedLiabilityAccountsAsync(ApplicationDbContext context)
         {

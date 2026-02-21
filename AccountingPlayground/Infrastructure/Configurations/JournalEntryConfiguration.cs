@@ -12,8 +12,16 @@ namespace AccountingPlayground.Infrastructure.Configurations
 
 			builder.HasKey( x => x.Id );
 			builder.Property(e => e.Reference).IsRequired().HasMaxLength(130);
+			builder.Property(e=>e.IsReversal).HasDefaultValue(false);		
+            builder.Property(e=>e.OriginalEntryId).IsRequired(false);		
 
+            builder.HasOne(e=>e.OriginalEntry)
+				.WithOne(e=>e.ReversalEntry)
+				.HasForeignKey<JournalEntry>(e=>e.OriginalEntryId)
+				.OnDelete(DeleteBehavior.Restrict);
 
-		}
+			builder.HasCheckConstraint("CK_JournalEntry_NoSelfReverse", "[Id]<>[ReversedEntryId]");
+
+        }
 	}
 }

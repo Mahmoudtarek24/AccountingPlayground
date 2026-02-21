@@ -22,6 +22,8 @@
         None = 0,
         RetainedEarnings = 1,
         WithholdingTaxPayable,
+        SupplierAdvances,
+        PrepaidExpenses
     }
     public enum AccountType
 	{

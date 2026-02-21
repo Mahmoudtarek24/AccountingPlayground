@@ -14,8 +14,8 @@ namespace AccountingPlayground.Application.Implementation
 {
     public class PaymentVoucherServices : IPaymentVoucherServices
     {
-         //private IFinancialAccountRepository financialAccountRepository {  get; }
-      
+        //private IFinancialAccountRepository financialAccountRepository {  get; }
+
         private readonly IFinancialAccountRepository financialAccountRepository;
         private readonly IJournalEntryRepository journalEntryRepository;
         private readonly IJournalEntryService journalEntryService;
@@ -27,16 +27,16 @@ namespace AccountingPlayground.Application.Implementation
                                       ISupplierRepository supplierRepository,
                                       ApplicationDbContext context)
         {
-            this.context = context; 
-            this.financialAccountRepository = financialAccountRepository;   
-            this.journalEntryService = journalEntryService; 
-            this.journalEntryRepository = journalEntryRepository; 
-            this.supplierRepository = supplierRepository;   
+            this.context = context;
+            this.financialAccountRepository = financialAccountRepository;
+            this.journalEntryService = journalEntryService;
+            this.journalEntryRepository = journalEntryRepository;
+            this.supplierRepository = supplierRepository;
         }
         // need to know when have transaction inside this method and also journalEntry have transaction
         public async Task<bool> CreatePaymentVoucher(CreatePaymentVoucherDto dto)
         {
-            if(dto.SettlementType ==SettlementType.PayableSettlement)
+            if (dto.SettlementType == SettlementType.PayableSettlement)
             {
 
             }
@@ -60,7 +60,7 @@ namespace AccountingPlayground.Application.Implementation
             var accountIds = new List<int> { dto.VatAccountId, dto.CashAccountId, dto.ExpenseAccountId };
             var ValidAccount = await financialAccountRepository.GetValidAnyAccountTypeIdsAsync(accountIds);
 
-            if(ValidAccount.Count !=accountIds.Count)
+            if (ValidAccount.Count != accountIds.Count)
                 return false;
 
 
@@ -72,11 +72,11 @@ namespace AccountingPlayground.Application.Implementation
             var paymentVoucher = new PaymentVoucher()
             {
                 VoucherDate = dto.VoucherDate,
-                EmployeeId = dto.EmployeeId,    
+                EmployeeId = dto.EmployeeId,
                 NetAmount = (long)dto.NetAmount,
                 VatAmount = (long)dto.VATAmount,
-                TotalAmount = (long)(dto.NetAmount+ dto.VATAmount),
-                CashSessionId = dto.CashSessionId,  
+                TotalAmount = (long)(dto.NetAmount + dto.VATAmount),
+                CashSessionId = dto.CashSessionId,
                 PaymentMethod = (Domain.AccountingEntities.PaymentMethod)dto.PaymentMethod,
                 //  VoucherNo = dto. need see any role used on this point generate it from data base or create algorizme to it
                 VoucherNo = await GenerateVoucherNumber()
@@ -128,8 +128,8 @@ namespace AccountingPlayground.Application.Implementation
             if (result != JournalEntryError.CreatedSuccessfully)
                 return false;
 
-            await context.PaymentVouchers.AddAsync(paymentVoucher);     
-            await context.SaveChangesAsync();   
+            await context.PaymentVouchers.AddAsync(paymentVoucher);
+            await context.SaveChangesAsync();
 
             return true;
         }
@@ -145,7 +145,7 @@ namespace AccountingPlayground.Application.Implementation
             if (dto.VATAmount < 0) return false;
             if (dto.NetAmount + dto.VATAmount <= 0) return false;
 
-            return true;    
+            return true;
         }
 
         public async Task ValidateAccountForRole(int accountId, AccountRole role)
@@ -185,19 +185,19 @@ namespace AccountingPlayground.Application.Implementation
             if (dto.PayableAccountId is null)
                 return false;
 
-            if (dto.PaidAmount <= 0) 
+            if (dto.PaidAmount <= 0)
                 return false;
 
             var paidAccount = dto.BankAccountId ?? dto.CashAccountId; //  will set this line of the first of class factory 
 
-            var accountIds = new List<int> { paidAccount, dto.PayableAccountId!.Value};
+            var accountIds = new List<int> { paidAccount, dto.PayableAccountId!.Value };
             var ValidAccount = await financialAccountRepository.GetValidAnyAccountTypeIdsAsync(accountIds);
 
             if (ValidAccount.Count != accountIds.Count)
                 return false;
 
             await ValidateAccountForRole(dto.PayableAccountId.Value, AccountRole.Payable);
-            if(dto.BankAccountId is not null)
+            if (dto.BankAccountId is not null)
                 await ValidateAccountForRole(dto.BankAccountId.Value, AccountRole.Bank);
             else
                 await ValidateAccountForRole(dto.CashAccountId, AccountRole.Cash);
@@ -207,9 +207,9 @@ namespace AccountingPlayground.Application.Implementation
 
 
             long OpenBalance = 0;  // this is money need to pay it 
-      
 
-            foreach(var journalEnty in journalEntryForPayableAccount)
+
+            foreach (var journalEnty in journalEntryForPayableAccount)
                 OpenBalance += (journalEnty.Credit - journalEnty.Debit);
 
 
@@ -220,9 +220,10 @@ namespace AccountingPlayground.Application.Implementation
 
 
 
-            if(dto.PaidAmount>OpenBalance)
-                return false;
-
+            if (dto.PaidAmount > OpenBalance)
+            {
+                // overpayment 
+            }
 
 
             var paymentVoucher = new PaymentVoucher()
@@ -231,7 +232,7 @@ namespace AccountingPlayground.Application.Implementation
                 EmployeeId = dto.EmployeeId,
                 CashSessionId = dto.CashSessionId,
                 PaymentMethod = (Domain.AccountingEntities.PaymentMethod)dto.PaymentMethod,
-                TotalAmount = (long)dto.PaidAmount,   
+                TotalAmount = (long)dto.PaidAmount,
                 //  VoucherNo = dto. need see any role used on this point generate it from data base or create algorizme to it
                 VoucherNo = await GenerateVoucherNumber()
             };
@@ -271,7 +272,7 @@ namespace AccountingPlayground.Application.Implementation
                     Debit = 0,
                     Credit = (long)dto.PaidAmount,
                 },
-               
+
             };
             var result = await journalEntryService.PostJournalEntry(journalEntry);
             if (result != JournalEntryError.CreatedSuccessfully)
@@ -328,21 +329,21 @@ namespace AccountingPlayground.Application.Implementation
             {
                 FinancialAccountId = dto.PayableAccountId.Value,
                 Amount = (long)NetPaidToSupplier,
-               // Description = "Supplier Gross Amount"
+                // Description = "Supplier Gross Amount"
             });
 
             paymentVoucher.PaymentVoucherLines.Add(new PaymentVoucherLine
             {
                 FinancialAccountId = withholdingAccount.Id,
                 Amount = (long)WithheldAmount,
-               // Description = "Withholding Tax"
+                // Description = "Withholding Tax"
             });
 
             paymentVoucher.PaymentVoucherLines.Add(new PaymentVoucherLine
             {
                 FinancialAccountId = dto.CashAccountId, // or Bank
                 Amount = (long)NetPaidToSupplier,
-               // Description = "Net Paid to Supplier"
+                // Description = "Net Paid to Supplier"
             });
 
 
@@ -389,10 +390,10 @@ namespace AccountingPlayground.Application.Implementation
         {
             return supplier switch
             {
-                { TaxRegistrationStatus : TaxRegistrationStatus.Exempt} => 0.0,
-                { TaxRegistrationStatus : TaxRegistrationStatus.Registered , IsSubjectToWithholding : true } => 0.01,
-                { TaxRegistrationStatus : TaxRegistrationStatus.NotRegistered , IsSubjectToWithholding :true} => 0.05,
-                _=>0.0, 
+                { TaxRegistrationStatus: TaxRegistrationStatus.Exempt } => 0.0,
+                { TaxRegistrationStatus: TaxRegistrationStatus.Registered, IsSubjectToWithholding: true } => 0.01,
+                { TaxRegistrationStatus: TaxRegistrationStatus.NotRegistered, IsSubjectToWithholding: true } => 0.05,
+                _ => 0.0,
             };
         }
 
@@ -403,7 +404,7 @@ namespace AccountingPlayground.Application.Implementation
             if (dto.PayableAccountId is null)
                 return false;
 
-            if (dto.GrossAmount is null || dto.GrossAmount <= 0) 
+            if (dto.GrossAmount is null || dto.GrossAmount <= 0)
                 return false;
 
             var grossAmount = dto.GrossAmount.Value;
@@ -521,7 +522,209 @@ namespace AccountingPlayground.Application.Implementation
                 throw;
             }
         }
+        // will be step inside PayableSettlement2
+        public async Task<bool> CreatePaymentVoucherWithOverpayment(CreatePaymentVoucherDto dto)
+        {
+            // need validation
+            // need to get money value should pay to this supplier 
+
+            //PayableAccountIdOverpayment
+
+            var journalEntryForPayableAccountId = await context.JournalEntryLines
+                .Where(e => e.FinancialAccountId == dto.PayableAccountIdOverpayment && !e.JournalEntry.FinancialYear.IsClosed)
+                .Select(e => new { e.Debit, e.Credit }).ToListAsync();
+
+            var OpenBalance = journalEntryForPayableAccountId.Sum(e => e.Credit) - journalEntryForPayableAccountId.Sum(e => e.Debit);
 
 
+            if (dto.PaidAmountOverpayment > OpenBalance)
+            {
+                var OverAmount = dto.PaidAmountOverpayment - OpenBalance;
+
+
+
+                var paymentVoucher = new PaymentVoucher()
+                {
+                    VoucherDate = dto.VoucherDate,
+                    EmployeeId = dto.EmployeeId,
+                    //NetAmount = (long)dto.NetAmount,
+                    // VatAmount = (long)dto.VATAmount,
+                    TotalAmount = (long)dto.PaidAmountOverpayment,
+                    CashSessionId = dto.CashSessionId,
+                    PaymentMethod = (Domain.AccountingEntities.PaymentMethod)dto.PaymentMethod,
+                    //  VoucherNo = dto. need see any role used on this point generate it from data base or create algorithm to it
+                    VoucherNo = await GenerateVoucherNumber()
+                };
+
+                // i will build foreach replace this code 
+                paymentVoucher.PaymentVoucherLines.Add(new PaymentVoucherLine
+                {
+                    FinancialAccountId = dto.PayableAccountIdOverpayment.Value,
+                    Amount = (long)dto.PaidAmountOverpayment,
+                });
+                paymentVoucher.PaymentVoucherLines.Add(new PaymentVoucherLine
+                {
+                    FinancialAccountId = dto.CashAccountId, // bank
+                    Amount = (long)dto.PaidAmountOverpayment
+                });
+
+
+                var journalEntry = new JournalEntryPostModel()
+                {
+                    //Reference = what should write her 
+                    Reference = $"PV-{paymentVoucher.VoucherNo}", // and her need to more clarification for  reference 
+                    EntryDate = dto.VoucherDate,
+                };
+                // will also replace this code with foreach 
+
+                journalEntry.Lines = new List<JournalEntryLinePostModel>
+                {
+                    new JournalEntryLinePostModel()
+                    {
+                        FinancialAccountId = dto.PayableAccountIdOverpayment.Value,
+                        Debit = (long)dto.PaidAmountOverpayment-(long)OverAmount,
+                        Credit =0
+                    },
+                    new JournalEntryLinePostModel()
+                    {
+                        FinancialAccountId = dto.CashAccountId, //bank
+                        Debit = 0,
+                        Credit =(long)dto.PaidAmountOverpayment
+                    },
+                    new JournalEntryLinePostModel()
+                    {
+                        FinancialAccountId = dto.SupplierAdvancesIdOverpayment.Value,
+                        Debit = (long)OverAmount,
+                        Credit =0
+                    },
+                };
+                var result = await journalEntryService.PostJournalEntry(journalEntry);
+                if (result != JournalEntryError.CreatedSuccessfully)
+                    return false;
+
+                await context.PaymentVouchers.AddAsync(paymentVoucher);
+                await context.SaveChangesAsync();
+
+                return true;
+
+            }
+
+            return default;
+        }
+        public async Task<bool> AdvancePayment(CreatePaymentVoucherDto dto)
+        {
+            if (dto.SettlementType is not SettlementType.AdvancePayment)
+                return false;
+
+            // 1️⃣ Get Supplier
+            var supplier = await supplierRepository.GetSupplierById(dto.PayableAccountId.Value);
+            if (supplier is null)
+                return false;
+
+            if (dto.PaidAmount < 0)
+                return false;
+
+
+
+            ////
+            var PrepaidExpensesAccount = await context.FinancialAccounts
+                        .FirstAsync(a => a.SystemRole == SystemAccountType.PrepaidExpenses);
+
+            ///
+            var paymentVoucher = new PaymentVoucher
+            {
+                VoucherDate = dto.VoucherDate,
+                EmployeeId = dto.EmployeeId,
+                PaymentMethod = (Domain.AccountingEntities.PaymentMethod)dto.PaymentMethod,
+                CashSessionId = dto.CashSessionId,
+                TotalAmount = (long)dto.PaidAmount,
+                VoucherNo = await GenerateVoucherNumber()
+            };
+
+            paymentVoucher.PaymentVoucherLines.Add(new PaymentVoucherLine
+            {
+                FinancialAccountId = dto.BankAccountId ?? dto.CashAccountId,
+                Amount = (long)dto.PaidAmount
+            });
+            paymentVoucher.PaymentVoucherLines.Add(new PaymentVoucherLine
+            {
+                FinancialAccountId = dto.PayableAccountId!.Value,
+                Amount = (long)dto.PaidAmount,
+            });
+
+            var journalEntry = new JournalEntryPostModel
+            {
+                EntryDate = dto.VoucherDate,
+                Reference = $"Withholding Payment - Supplier #{supplier.Id}"
+            };
+
+            journalEntry.Lines = new List<JournalEntryLinePostModel>
+            {
+                new()
+                {
+                    FinancialAccountId = dto.BankAccountId ?? dto.CashAccountId,
+                    Credit = (long)dto.PaidAmount,
+                    Debit  =0,
+                },
+                new()
+                {
+                    FinancialAccountId = PrepaidExpensesAccount.Id,
+                    Credit = 0,
+                    Debit = (long)dto.PaidAmount
+                }
+            };
+            var result = await journalEntryService.PostJournalEntry(journalEntry);
+            if (result != JournalEntryError.CreatedSuccessfully)
+                return false;
+
+            await context.PaymentVouchers.AddAsync(paymentVoucher);
+            await context.SaveChangesAsync();
+
+            return true;
+
+            return default;
+        }
+
+        public async Task<bool> ReversePaymentVoucher(int voucherId, long? PartialPayment = null)
+        {
+            var payment = await context.PaymentVouchers.Include(e => e.JournalEntry)
+                                        .SingleOrDefaultAsync(e => e.Id == voucherId);
+
+            if (payment is null)
+                return false;
+
+            if (payment.JournalEntry.IsReversal)
+                return false;
+
+
+            var paymentIsReconciled = new Random().Next(1, 100);
+
+
+            if (paymentIsReconciled > 700)
+                return false;
+
+
+            payment.IsReversed = true;
+
+            ReversalOptions reversalOptions = null;
+
+            if (PartialPayment is not null)
+            {
+                reversalOptions = new ReversalOptions()
+                {
+                    PartialPayment = PartialPayment,
+                    ReversalDate = DateTime.Now,
+                };             
+            }
+
+            var result = await journalEntryService.ReverseJournalEntry(payment.JournalEntryId, reversalOptions);
+
+            if (!result)
+                return false;
+
+            await context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

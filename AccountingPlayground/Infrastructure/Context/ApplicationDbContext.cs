@@ -30,7 +30,8 @@ namespace AccountingPlayground.Infrastructure.Context
 		public DbSet<IncomeTax> IncomeTaxes { get; set; }
 		public DbSet<VatReturn> VatReturns { get; set; }
 		public DbSet<FinancialYear> FinancialYear { get; set; }	
-
+		public DbSet<FinancialSettings> FinancialSettings { get; set; }	
+		public DbSet<TaxSetting> TaxSettings { get; set; }	
 
         public DbSet<Employee> Employees { get; set; }
 		public DbSet<Customer> Customers { get; set; }
@@ -44,6 +45,7 @@ namespace AccountingPlayground.Infrastructure.Context
 		public DbSet<MenuItem> MenuItems { get; set; }
 		public DbSet<Ingredient> Ingredients { get; set; }
 		public DbSet<RecipeLine> RecipeLines { get; set; }
+
 
 	}
 }

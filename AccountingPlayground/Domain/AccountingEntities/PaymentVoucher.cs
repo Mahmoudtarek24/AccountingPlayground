@@ -22,8 +22,13 @@ namespace AccountingPlayground.Domain.AccountingEntities
 		public int? CashSessionId { get; set; }    
 		public CashSession? CashSession { get; set; }
 
-		public ICollection<PaymentVoucherLine> PaymentVoucherLines { get; set; }	
-	}
+		public ICollection<PaymentVoucherLine> PaymentVoucherLines { get; set; }
+
+        public int JournalEntryId { get; set; }
+        public JournalEntry JournalEntry { get; set; }
+
+		public bool IsReversed { get; set; } // indicate if this voucher has been reversed
+    }
 	public enum PaymentMethod
 	{
 		Cash = 1,
