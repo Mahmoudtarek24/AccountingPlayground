@@ -4,7 +4,7 @@ namespace AccountingPlayground.Application.Interfaces
 {
     public interface IJournalEntryService
     {
-        Task<JournalEntryError> PostJournalEntry(JournalEntryPostModel request);
+        Task<(JournalEntryError, int)> PostJournalEntry(JournalEntryPostModel request);
 
         Task<bool> ReverseJournalEntry(int entryId , ReversalOptions  options = null);  
 

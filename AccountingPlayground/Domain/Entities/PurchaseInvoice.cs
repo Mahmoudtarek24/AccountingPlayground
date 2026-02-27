@@ -7,8 +7,9 @@
 
 		public long NetAmount { get; set; } 
 		public long VatAmount { get; set; }
+		public long TotalAmount { get; set; }	
 
-		public int SupplierId { get; set; }
+        public int SupplierId { get; set; }
 		public Supplier Supplier { get; set; }
 
 		public List<PurchaseInvoiceLine> Lines { get; set; } = new();

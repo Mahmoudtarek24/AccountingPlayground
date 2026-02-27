@@ -23,7 +23,18 @@
         RetainedEarnings = 1,
         WithholdingTaxPayable,
         SupplierAdvances,
-        PrepaidExpenses
+        PrepaidExpenses,
+        Cash,
+        Bank,
+        Inventory,
+        AccountsReceivable,
+        AccountsPayable,
+        VatPayable,
+        VatInput,
+        IncomeTaxPayable,
+        Expenses,
+        Revenue,
+        SupplierDebitBalance
     }
     public enum AccountType
 	{

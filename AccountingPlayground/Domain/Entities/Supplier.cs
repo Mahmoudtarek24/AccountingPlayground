@@ -1,4 +1,6 @@
-﻿namespace AccountingPlayground.Domain.Entities
+﻿using AccountingPlayground.Domain.AccountingEntities;
+
+namespace AccountingPlayground.Domain.Entities
 {
 	public class Supplier
 	{
@@ -7,6 +9,8 @@
 		public string? TaxNumber { get; set; }	
 		public TaxRegistrationStatus  TaxRegistrationStatus { get; set; }
 		public bool IsSubjectToWithholding { get; set; }		
+		public int FinancialAccountId { get; set; }	
+		public FinancialAccount FinancialAccount { get; set; }
     }
 	public enum TaxRegistrationStatus
 	{

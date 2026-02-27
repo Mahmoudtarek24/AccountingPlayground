@@ -6,6 +6,9 @@
         VatRecoverable,
         Cash,
         Payable,
-        Bank
+        Bank,
+        CashBank,
+        AdvancePayment,
+        SupplierDebitBalance
     }
 }

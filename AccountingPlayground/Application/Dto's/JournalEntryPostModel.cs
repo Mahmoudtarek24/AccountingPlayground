@@ -3,9 +3,9 @@
     public class JournalEntryPostModel
     {
         public DateTime EntryDate { get; set; }
-        public string Reference { get; set; } = string.Empty; 
-        public IReadOnlyCollection<JournalEntryLinePostModel> Lines { get; set; } // IReadOnlyCollection to prevent update after create 
-            = new List<JournalEntryLinePostModel>();
+        public string Reference { get; set; } = string.Empty;
+        public List<JournalEntryLinePostModel> Lines { get; set; } = new List<JournalEntryLinePostModel>();
+        //  = new List<JournalEntryLinePostModel>();       IReadOnlyCollection to prevent update after create       
     }
 
     public class JournalEntryLinePostModel

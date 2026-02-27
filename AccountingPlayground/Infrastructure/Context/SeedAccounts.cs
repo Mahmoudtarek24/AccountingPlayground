@@ -13,7 +13,8 @@ namespace AccountingPlayground.Infrastructure.Context
             await SeedLiabilityAccountsAsync(context);
             await SeedRevenueAndExpenseAccountsAsync(context);
             await SeedEquityAccountsAsync(context);
-        } 
+        }
+
         public static async Task SeedAssetAccountsAsync(ApplicationDbContext context)
         {
             if (context.FinancialAccounts.Any(a => a.Type == AccountType.Asset))
@@ -26,7 +27,7 @@ namespace AccountingPlayground.Infrastructure.Context
             await context.SaveChangesAsync();
 
             // Cash
-            var cash = CreateAccount("Cash","11",2,false,AccountType.Asset,assets.Id);
+            var cash = CreateAccount("Cash", "11", 2, false, AccountType.Asset, assets.Id, SystemAccountType.Cash);
 
             context.FinancialAccounts.Add(cash);
             await context.SaveChangesAsync();
@@ -40,7 +41,7 @@ namespace AccountingPlayground.Infrastructure.Context
             await context.SaveChangesAsync();
 
             // Bank
-            var bank = CreateAccount("Bank", "12", 2, false, AccountType.Asset, assets.Id);
+            var bank = CreateAccount("Bank", "12", 2, false, AccountType.Asset, assets.Id, SystemAccountType.Bank);
 
             context.FinancialAccounts.Add(bank);
             await context.SaveChangesAsync();
@@ -54,7 +55,7 @@ namespace AccountingPlayground.Infrastructure.Context
             await context.SaveChangesAsync();
 
             // Inventory
-            var inventory = CreateAccount("Inventory", "13", 2, false, AccountType.Asset, assets.Id);
+            var inventory = CreateAccount("Inventory", "13", 2, false, AccountType.Asset, assets.Id, SystemAccountType.Inventory);
 
             context.FinancialAccounts.Add(inventory);
             await context.SaveChangesAsync();
@@ -65,7 +66,7 @@ namespace AccountingPlayground.Infrastructure.Context
 
             // Receivables
             context.FinancialAccounts.AddRange(
-                CreateAccount("Accounts Receivable", "14", 2, true, AccountType.Asset, assets.Id),
+                CreateAccount("Accounts Receivable", "14", 2, true, AccountType.Asset, assets.Id, SystemAccountType.AccountsReceivable),
                 CreateAccount("Employee Receivable", "15", 2, true, AccountType.Asset, assets.Id)
             );
 
@@ -80,15 +81,7 @@ namespace AccountingPlayground.Infrastructure.Context
 
 
             // Prepaid Expenses 
-            var prepaidExpenses = CreateAccount(
-                "Prepaid Expenses",
-                "17",
-                2,
-                true,
-                AccountType.Asset,
-                assets.Id,
-                SystemAccountType.PrepaidExpenses
-            );
+            var prepaidExpenses = CreateAccount("Prepaid Expenses", "17", 2, true, AccountType.Asset, assets.Id, SystemAccountType.PrepaidExpenses);
 
             context.FinancialAccounts.Add(prepaidExpenses);
             await context.SaveChangesAsync();
@@ -107,12 +100,12 @@ namespace AccountingPlayground.Infrastructure.Context
 
             // Children (Leaf accounts)
             context.FinancialAccounts.AddRange(
-                CreateAccount("Accounts Payable", "21", 2, true, AccountType.Liability,liabilities.Id),
+                CreateAccount("Accounts Payable", "21", 2, true, AccountType.Liability, liabilities.Id, SystemAccountType.AccountsPayable),
                 CreateAccount("Employees Payable", "22", 2, true, AccountType.Liability, liabilities.Id),
-                CreateAccount("VAT Payable", "23", 2, true, AccountType.Liability, liabilities.Id),
-                CreateAccount("Income Tax Payable", "24", 2, true, AccountType.Liability, liabilities.Id),
+                CreateAccount("VAT Payable", "23", 2, true, AccountType.Liability, liabilities.Id, SystemAccountType.VatPayable),
+                CreateAccount("Income Tax Payable", "24", 2, true, AccountType.Liability, liabilities.Id, SystemAccountType.IncomeTaxPayable),
                 CreateAccount("Bank Loans", "25", 2, true, AccountType.Liability, liabilities.Id),
-                CreateAccount("Withholding Tax Payable","26",2,true,AccountType.Liability,liabilities.Id,SystemAccountType.WithholdingTaxPayable)
+                CreateAccount("Withholding Tax Payable", "26", 2, true, AccountType.Liability, liabilities.Id, SystemAccountType.WithholdingTaxPayable)
                 );
 
             await context.SaveChangesAsync();
@@ -124,7 +117,7 @@ namespace AccountingPlayground.Infrastructure.Context
                 return;
 
             // ---------- Revenue ----------
-            var revenue = CreateAccount("Revenue","4",1,false,AccountType.Revenue);
+            var revenue = CreateAccount("Revenue", "4", 1, false, AccountType.Revenue, null, SystemAccountType.Revenue);
 
             context.FinancialAccounts.Add(revenue);
             await context.SaveChangesAsync();
@@ -138,7 +131,7 @@ namespace AccountingPlayground.Infrastructure.Context
             await context.SaveChangesAsync();
 
             // ---------- Expenses ----------
-            var expenses = CreateAccount("Expenses","5",1,false,AccountType.Expense);
+            var expenses = CreateAccount("Expenses", "5", 1, false, AccountType.Expense, null, SystemAccountType.Expenses);
 
             context.FinancialAccounts.Add(expenses);
             await context.SaveChangesAsync();
@@ -167,7 +160,7 @@ namespace AccountingPlayground.Infrastructure.Context
             // Children (Leaf)
             context.FinancialAccounts.AddRange(
                 CreateAccount("Capital", "31", 2, true, AccountType.Equity, equity.Id),
-                CreateAccount("Retained Earnings","32", 2,true,AccountType.Equity,equity.Id, SystemAccountType.RetainedEarnings)
+                CreateAccount("Retained Earnings", "32", 2, true, AccountType.Equity, equity.Id, SystemAccountType.RetainedEarnings)
             );
 
             await context.SaveChangesAsync();

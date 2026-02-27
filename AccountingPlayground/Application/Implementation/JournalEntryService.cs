@@ -17,14 +17,14 @@ namespace AccountingPlayground.Application.Implementation
         private readonly IFinancialYearRepository financialYearRepository;
         private readonly ApplicationDbContext context;
         public JournalEntryService(IJournalEntryRepository journalEntryRepository
-                                  ,IFinancialAccountRepository financialAccountRepository
-                                  ,IFinancialYearRepository financialYearRepository
-                                  ,ApplicationDbContext context)
+                                  , IFinancialAccountRepository financialAccountRepository
+                                  , IFinancialYearRepository financialYearRepository
+                                  , ApplicationDbContext context)
         {
             this.journalEntryRepository = journalEntryRepository;
-            this.financialAccountRepository = financialAccountRepository;   
+            this.financialAccountRepository = financialAccountRepository;
             this.financialYearRepository = financialYearRepository;
-            this.context= context;  
+            this.context = context;
         }
 
         //ValidateEntryStructure
@@ -34,26 +34,26 @@ namespace AccountingPlayground.Application.Implementation
         //EnsurePeriodIsOpen
         //EnsureAccountsArePostable
 
-        public async Task<JournalEntryError> PostJournalEntry(JournalEntryPostModel request)
+        public async Task<(JournalEntryError, int)> PostJournalEntry(JournalEntryPostModel request)
         {
             if (!IsEntryStructureValid(request))
-                return JournalEntryError.InvalidEntryStructure;
+                return (JournalEntryError.InvalidEntryStructure,0);
 
             var totalDebit = request.Lines.Sum(l => l.Debit);
             var totalCredit = request.Lines.Sum(l => l.Credit);
           
             if (totalDebit != totalCredit)
-                return JournalEntryError.UnbalancedEntry;
+                return (JournalEntryError.UnbalancedEntry,0);
 
             var accountIds = request.Lines.Select(l => l.FinancialAccountId).Distinct().ToList();
 
             var validAccountIds =  await financialAccountRepository.GetValidAccountIdsAsync(accountIds);
 
             if(validAccountIds.Count() != accountIds.Count())
-                return JournalEntryError.UnbalancedEntry;
+                return (JournalEntryError.UnbalancedEntry,0);
 
             if (!await financialYearRepository.IsPostingAllowedAsync(request.EntryDate))
-                return JournalEntryError.ClosedPeriod;
+                return (JournalEntryError.ClosedPeriod,0);
 
             var journalEntry = new JournalEntry
             {
@@ -73,7 +73,7 @@ namespace AccountingPlayground.Application.Implementation
             await context.JournalEntries.AddAsync(journalEntry);
             await context.SaveChangesAsync();
 
-            return JournalEntryError.CreatedSuccessfully;
+            return (JournalEntryError.CreatedSuccessfully,journalEntry.Id);
 
         }
 
@@ -104,7 +104,6 @@ namespace AccountingPlayground.Application.Implementation
 
         public async Task<bool> ReverseJournalEntry(int entryId, ReversalOptions? options = null)
         {
-            using var transaction = await context.Database.BeginTransactionAsync();
 
             var entry = await context.JournalEntries
                 .Include(e => e.Lines)
@@ -199,8 +198,6 @@ namespace AccountingPlayground.Application.Implementation
                     Credit = (long)line.Credit
                 });
             }
-
-            entry.IsReversal = true;
 
             context.JournalEntries.Add(reverse);
             await context.SaveChangesAsync();

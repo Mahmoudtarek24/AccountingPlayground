@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AccountingPlayground.Infrastructure.Configurations
 {
-	public class CashSessionConfiguration : IEntityTypeConfiguration<CashSession>
+    public class CashSessionConfiguration : IEntityTypeConfiguration<CashSession>
 	{
 		public void Configure(EntityTypeBuilder<CashSession> builder)
 		{

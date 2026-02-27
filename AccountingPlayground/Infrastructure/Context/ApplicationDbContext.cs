@@ -25,7 +25,8 @@ namespace AccountingPlayground.Infrastructure.Context
 		public DbSet<JournalEntryLine> JournalEntryLines { get; set; }
 		public DbSet<CashSession> CashSessions { get; set; }
 		public DbSet<PaymentVoucher> PaymentVouchers { get; set; }
-		public DbSet<ReceiptVoucher> ReceiptVouchers { get; set; }
+		public DbSet<PaymentVoucherLine> PaymentVoucherLines { get; set; }	
+        public DbSet<ReceiptVoucher> ReceiptVouchers { get; set; }
 		public DbSet<Expense> Expenses { get; set; }
 		public DbSet<IncomeTax> IncomeTaxes { get; set; }
 		public DbSet<VatReturn> VatReturns { get; set; }
